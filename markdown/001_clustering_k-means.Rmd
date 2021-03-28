@@ -1,0 +1,84 @@
+---
+title: "Clustering with K-Means"
+author: "Muhammad Apriandito"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Load Library
+```{r}
+# Load library
+library(tidyverse) 
+library(readxl)
+library(cluster)
+library(factoextra)
+```
+
+# Import Data
+```{r}
+# Import data
+df <- read_xlsx("data/income-spend.xlsx")
+```
+
+# Explorasi Data
+```{r}
+# Melihat Keseluruhan Data
+df
+```
+
+```{r}
+# Lihat Deskriptif Statistik
+summary(df)
+```
+
+```{r}
+# Visualisasi Dalam Scatter Plot
+df %>%
+  ggplot(aes(x = Income, y = Spending)) +
+  geom_point()
+```
+
+# Data Preprocessing
+```{r}
+# Standardisasi
+df_scaled <- df %>%
+  select(Income, Spending) %>%
+  mutate_at(c("Income", "Spending"), scale)
+
+head(df_scaled)
+```
+
+```{r}
+# Visualisasi luas_bagunan dan luas_tanah setelah di standardidasi
+df_scaled %>%
+  ggplot(aes(x = Income, y = Spending)) +
+  geom_point()
+```
+
+# Mencari Jumlah Cluster Optimal
+```{r}
+# Mencari jumlah kluster optimal dengan elbow method
+fviz_nbclust(df_scaled, kmeans, method = "wss")
+```
+ 
+```{r}
+# Mencari nilai kluster optimal dengan silhouette method
+fviz_nbclust(df_scaled, kmeans, method = "silhouette")
+```
+
+# K-Means Clustering
+```{r}
+# Melakukan kmean clustering
+cluster <- kmeans(df_scaled, centers = 3, nstart = 25)
+cluster
+```
+
+# Visualisasi Cluster
+```{r}
+# Visualisasi cluster
+fviz_cluster(cluster, data = df_scaled, geom = "point")
+```
+

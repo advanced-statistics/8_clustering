@@ -1,0 +1,69 @@
+---
+title: "Clustering - Mall Customer"
+author: "Muhammad Apriandito"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Load Library
+```{r}
+# Load library
+library(tidyverse) 
+library(readxl)
+library(cluster)
+library(factoextra)
+```
+
+# Import Data
+```{r}
+# Import data
+df <- read_csv("data/mall-customer.csv")
+```
+
+# Eksplorasi Data
+```{r}
+# View Data
+df
+```
+
+```{r}
+# Melihat Data dengan glimpse
+glimpse(df)
+```
+
+```{r}
+# Standardisasi
+df_scaled <- df %>%
+  select(-CustomerID, -Gender) %>%
+  mutate_at(c("Age", "Annual Income (k$)", "Spending Score (1-100)"), scale)
+
+head(df_scaled)
+```
+
+# Mencari Jumlah Cluster Optimal
+```{r}
+# Mencari jumlah kluster optimal dengan elbow method
+fviz_nbclust(df_scaled, kmeans, method = "wss")
+```
+
+```{r}
+# Mencari nilai kluster optimal dengan silhouette method
+fviz_nbclust(df_scaled, kmeans, method = "silhouette")
+```
+
+# K-Means Clustering
+```{r}
+# Melakukan kmean clustering
+cluster <- kmeans(df_scaled, centers = 8, nstart = 25)
+cluster
+```
+
+# Visualisasi Cluster
+```{r}
+# Visualisasi cluster
+fviz_cluster(cluster, data = df_scaled, geom = "point")
+```
+
